@@ -1469,35 +1469,54 @@ define pcodeop vmovsldup_avx ;
 	# TODO ZmmReg1 = zext(YmmReg1)
 }
 
-# MOVSS 4-120 PAGE 1240 LINE 64433
+
 define pcodeop vmovss_avx ;
+# VEX.LIG.F3.0F.WIG 10 /r VMOVSS xmm1, xmm2, xmm3
+# Merge scalar single-precision floating-point value from xmm2 and xmm3 to xmm1 register
 :VMOVSS XmmReg1, vexVVVV_XmmReg, XmmReg2 is $(VEX_NDS) & $(VEX_LIG) & $(VEX_PRE_F3) & $(VEX_0F) & $(VEX_WIG) & vexVVVV_XmmReg; byte=0x10; (XmmReg1 & YmmReg1) & (mod=0x3 & XmmReg2)
 {
-	local tmp:16 = vmovss_avx( vexVVVV_XmmReg, XmmReg2 );
-	YmmReg1 = zext(tmp);
+	XmmReg1[0,32] = XmmReg2[0,32];
+	XmmReg1[32,32] = vexVVVV_XmmReg[32,32];
+	XmmReg1[64,32] = vexVVVV_XmmReg[64,32];
+	XmmReg1[96,32] = vexVVVV_XmmReg[96,32];
+
+	YmmReg1 = zext(XmmReg1);
+
 	# TODO ZmmReg1 = zext(XmmReg1)
 }
 
-# MOVSS 4-120 PAGE 1240 LINE 64435
+# VEX.LIG.F3.0F.WIG 10 /r VMOVSS xmm1, m32
+# Load scalar single-precision floating-point value from m32 to xmm1 register.
 :VMOVSS XmmReg1, m32 is $(VEX_NONE) & $(VEX_LIG) & $(VEX_PRE_F3) & $(VEX_0F) & $(VEX_WIG); byte=0x10; (XmmReg1 & YmmReg1) ... & m32
 {
-	local tmp:16 = vmovss_avx( m32 );
-	YmmReg1 = zext(tmp);
+	
+	XmmReg1[0,32] = m32;
+	XmmReg1[32,32] = 0;
+    XmmReg1[64,32] = 0;
+    XmmReg1[96,32] = 0;
+
+	YmmReg1 = zext(XmmReg1);
 	# TODO ZmmReg1 = zext(XmmReg1)
 }
 
-# MOVSS 4-120 PAGE 1240 LINE 64439
+# VEX.LIG.F3.0F.WIG 11 /r VMOVSS xmm1, xmm2, xmm3
+# Move scalar single-precision floating-point value from xmm2 and xmm3 to xmm1 register.
 :VMOVSS XmmReg2, vexVVVV_XmmReg, XmmReg1 is $(VEX_NDS) & $(VEX_LIG) & $(VEX_PRE_F3) & $(VEX_0F) & $(VEX_WIG) & vexVVVV_XmmReg; byte=0x11; XmmReg1 & (mod=0x3 & (XmmReg2 & YmmReg2))
 {
-	local tmp:16 = vmovss_avx( vexVVVV_XmmReg, XmmReg1 );
-	YmmReg2 = zext(tmp);
+	XmmReg2[0,32] = XmmReg1[0,32];
+	XmmReg2[32,32] = vexVVVV_XmmReg[32,32];
+	XmmReg2[64,32] = vexVVVV_XmmReg[64,32];
+	XmmReg2[96,32] = vexVVVV_XmmReg[96,32];
+
+	YmmReg2 = zext(XmmReg2);
 	# TODO ZmmReg2 = zext(XmmReg2)
 }
 
-# MOVSS 4-120 PAGE 1240 LINE 64441
+# VEX.LIG.F3.0F.WIG 11 /r VMOVSS m32, xmm1
+# Move scalar single-precision floating-point value from xmm1 register to m32.
 :VMOVSS m32, XmmReg1 is $(VEX_NONE) & $(VEX_LIG) & $(VEX_PRE_F3) & $(VEX_0F) & $(VEX_WIG); byte=0x11; XmmReg1 ... & m32
 {
-	m32 = vmovss_avx( XmmReg1 );
+	m32 = XmmReg1[0,32];
 }
 
 # MOVUPD 4-126 PAGE 1246 LINE 64687
